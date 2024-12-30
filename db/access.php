@@ -34,6 +34,16 @@ $capabilities = array(
         )
     ),
 
+    'mod/slideshow:viewslides' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+
     'mod/slideshow:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 

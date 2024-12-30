@@ -37,7 +37,7 @@ function slideshow_supports($feature) {
         case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
         case FEATURE_GRADE_HAS_GRADE:         return false;
         case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_BACKUP_MOODLE2:          return false;
         case FEATURE_SHOW_DESCRIPTION:        return true;
         case FEATURE_MOD_PURPOSE:             return MOD_PURPOSE_CONTENT;
 
@@ -574,4 +574,21 @@ function mod_slideshow_get_path_from_pluginfile(string $filearea, array $args) :
         'itemid' => 0,
         'filepath' => $filepath,
     ];
+}
+
+/**
+ * This function extends the settings navigation block for the site.
+ *
+ * It is safe to rely on PAGE here as we will only ever be within the module
+ * context when this is called
+ *
+ * @param settings_navigation $settings navigation_node object.
+ * @param navigation_node $slidesnode navigation_node object.
+ * @return void
+ */
+function slideshow_extend_settings_navigation(settings_navigation $settings, navigation_node $slidesnode): void {
+    if (has_capability('mod/slideshow:viewslides', $settings->get_page()->cm->context)) {
+        $url = new moodle_url('/mod/slideshow/slides.php', ['id' => $settings->get_page()->cm->id]);
+        $slidesnode->add(get_string("slides", "slideshow"), $url, navigation_node::TYPE_CUSTOM, null, 'slideshowslides');
+    }
 }

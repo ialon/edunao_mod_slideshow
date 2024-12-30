@@ -32,6 +32,8 @@
 
  $string['privacy:metadata'] = 'The Slideshow resource plugin does not store any personal data.';
  $string['content'] = 'Slideshow content';
+ $string['slides'] = 'Slides';
+
 
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
 $string['contentheader'] = 'Content';
@@ -65,4 +67,8 @@ $string['search:activity'] = 'Slideshow';
 
 $string['addnew'] = 'Add new slide';
 $string['edit'] = 'Edit slide';
+$string['reorder'] = 'Reorder slide';
+$string['hide'] = 'Hide slide';
+$string['show'] = 'Show slide';
+$string['delete'] = 'Delete slide';
 $string['slide_saved'] = 'Slide saved';
