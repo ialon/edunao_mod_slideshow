@@ -63,3 +63,6 @@ $string['printlastmodified'] = 'Display last modified date';
 $string['printlastmodifiedexplain'] = 'Display last modified date below content?';
 $string['search:activity'] = 'Slideshow';
 
+$string['addnew'] = 'Add new slide';
+$string['edit'] = 'Edit slide';
+$string['slide_saved'] = 'Slide saved';
