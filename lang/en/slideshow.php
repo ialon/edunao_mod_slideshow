@@ -31,7 +31,7 @@
  $string['slideshow:addinstance'] = 'Add a new slideshow resource';
 
  $string['privacy:metadata'] = 'The Slideshow resource plugin does not store any personal data.';
- $string['content'] = 'Slideshow content';
+ $string['content'] = 'Slide content';
  $string['slides'] = 'Slides';
 
 
@@ -66,6 +66,9 @@ $string['printlastmodifiedexplain'] = 'Display last modified date below content?
 $string['search:activity'] = 'Slideshow';
 
 $string['addnew'] = 'Add new slide';
+$string['prev'] = 'Previous slide';
+$string['next'] = 'Next slide';
+$string['fullscreen'] = 'Fullscreen';
 $string['edit'] = 'Edit slide';
 $string['reorder'] = 'Reorder slide';
 $string['hide'] = 'Hide slide';
