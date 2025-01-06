@@ -97,16 +97,7 @@ function slideshow_add_instance($data, $mform = null) {
     require_once("$CFG->libdir/resourcelib.php");
 
     $cmid = $data->coursemodule;
-
     $data->timemodified = time();
-    $displayoptions = array();
-    if ($data->display == RESOURCELIB_DISPLAY_POPUP) {
-        $displayoptions['popupwidth']  = $data->popupwidth;
-        $displayoptions['popupheight'] = $data->popupheight;
-    }
-    $displayoptions['printintro']   = $data->printintro;
-    $displayoptions['printlastmodified'] = $data->printlastmodified;
-    $data->displayoptions = serialize($displayoptions);
 
     $data->id = $DB->insert_record('slideshow', $data);
 
@@ -135,15 +126,6 @@ function slideshow_update_instance($data, $mform) {
     $data->timemodified = time();
     $data->id           = $data->instance;
     $data->revision++;
-
-    $displayoptions = array();
-    if ($data->display == RESOURCELIB_DISPLAY_POPUP) {
-        $displayoptions['popupwidth']  = $data->popupwidth;
-        $displayoptions['popupheight'] = $data->popupheight;
-    }
-    $displayoptions['printintro']   = $data->printintro;
-    $displayoptions['printlastmodified'] = $data->printlastmodified;
-    $data->displayoptions = serialize($displayoptions);
 
     $DB->update_record('slideshow', $data);
 

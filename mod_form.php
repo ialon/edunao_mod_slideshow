@@ -50,45 +50,6 @@ class mod_slideshow_mod_form extends moodleform_mod {
         $this->standard_intro_elements();
 
         //-------------------------------------------------------
-        $mform->addElement('header', 'appearancehdr', get_string('appearance'));
-
-        if ($this->current->instance) {
-            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions), $this->current->display);
-        } else {
-            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions));
-        }
-        if (count($options) == 1) {
-            $mform->addElement('hidden', 'display');
-            $mform->setType('display', PARAM_INT);
-            reset($options);
-            $mform->setDefault('display', key($options));
-        } else {
-            $mform->addElement('select', 'display', get_string('displayselect', 'slideshow'), $options);
-            $mform->setDefault('display', $config->display);
-        }
-
-        if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
-            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'slideshow'), array('size'=>3));
-            if (count($options) > 1) {
-                $mform->hideIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
-            }
-            $mform->setType('popupwidth', PARAM_INT);
-            $mform->setDefault('popupwidth', $config->popupwidth);
-
-            $mform->addElement('text', 'popupheight', get_string('popupheight', 'slideshow'), array('size'=>3));
-            if (count($options) > 1) {
-                $mform->hideIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
-            }
-            $mform->setType('popupheight', PARAM_INT);
-            $mform->setDefault('popupheight', $config->popupheight);
-        }
-
-        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'slideshow'));
-        $mform->setDefault('printintro', $config->printintro);
-        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'slideshow'));
-        $mform->setDefault('printlastmodified', $config->printlastmodified);
-
-        //-------------------------------------------------------
         $this->standard_coursemodule_elements();
 
         //-------------------------------------------------------
