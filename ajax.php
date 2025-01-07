@@ -25,12 +25,13 @@ define('NO_DEBUG_DISPLAY', true);
 
 require_once('../../config.php');
 
-global $DB;
+global $DB, $PAGE, $OUTPUT;
 
 $slideid = required_param('slideid', PARAM_INT);
 $action = required_param('action', PARAM_ALPHA);
 $oldorder = optional_param('oldorder', 0, PARAM_INT);
 $neworder = optional_param('neworder', 0, PARAM_INT);
+$confirm = optional_param('confirm', '', PARAM_ALPHA);
 
 if (!$slide = $DB->get_record('slideshow_slide', array('id'=>$slideid))) {
     throw new \moodle_exception('invalidaccessparameter');
@@ -84,6 +85,10 @@ switch ($action) {
 
         break;
     case 'delete':
+        if (!confirm_sesskey()) {
+            throw new \moodle_exception('confirmsesskeybad', '', $baseurl);
+        }
+
         $result = $DB->delete_records('slideshow_slide', ['id' => $slideid]);
 
         // Update sortorder
@@ -104,6 +109,7 @@ switch ($action) {
 
         $response = array(
             'slide' => $slideid,
+            'action' => $action,
             'result' => $result
         );
         echo json_encode($response);

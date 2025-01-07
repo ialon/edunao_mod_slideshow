@@ -74,4 +74,6 @@ $string['reorder'] = 'Reorder slide';
 $string['hide'] = 'Hide slide';
 $string['show'] = 'Show slide';
 $string['delete'] = 'Delete slide';
+$string['deleteconfirm'] = 'Are you sure you want to delete this slide?';
+$string['confirm'] = 'Delete';
 $string['slide_saved'] = 'Slide saved';
