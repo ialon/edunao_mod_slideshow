@@ -31,9 +31,9 @@
 }}
 
 <div class="slideshow-container generalbox center clearfix">
-    <ul id="slide-list">
+    <ul id="slide-list" data-cmid="{{slideshow}}">
         {{#slides}}
-            <li class="slide-item no-swipe group">
+            <li class="slide-item no-swipe group" data-sortorder="{{sortorder}}" data-id="{{id}}">
                 <div class="handle instant">{{sortorder}}</div>
                 <div class="name">{{name}}</div>
                 <div class="actions">
@@ -59,8 +59,8 @@
     </ul>
 </div>
 {{#js}}
-require([], function() {
-    var ul = document.getElementById('slide-list');
+require(['core/config', 'jquery'], function(Config, $) {
+    var ul = document.querySelector('#slide-list[data-cmid="{{slideshow}}"]');
 
     ul.addEventListener('slip:beforereorder', function(e){
         if (/demo-no-reorder/.test(e.target.className)) {
@@ -80,6 +80,16 @@ require([], function() {
 
     ul.addEventListener('slip:reorder', function(e){
         e.target.parentNode.insertBefore(e.target, e.detail.insertBefore);
+
+        let slideid = e.target.dataset.id;
+        let oldorder = e.detail.originalIndex + 1;
+        let neworder = e.detail.spliceIndex + 1;
+
+        // console.log("Reorder slide ID " + slideid + " from " + oldorder + " to " + neworder);
+
+        if (neworder !== oldorder) {
+            changeSortOrder(slideid, neworder, oldorder);
+        }
         return false;
     }, false);
 
@@ -102,5 +112,42 @@ require([], function() {
             this.style.cursor = "-moz-grab";
         });
     }
+
+    /**
+    * Change sort order
+    * @param {Number} Slide ID
+    * @param {Number} New order
+    * @param {Number} Old order
+    */
+    changeSortOrder = (slideid, neworder, oldorder) => {
+        var ul = document.querySelector('#slide-list[data-cmid="{{slideshow}}"]');
+
+        let URL = Config.wwwroot + '/mod/slideshow/ajax.php';
+        let data = {
+            slideid: slideid,
+            action: 'reorder',
+            neworder: neworder,
+            oldorder: oldorder,
+            sesskey: Config.sesskey
+        };
+        let settings = {
+            type: 'GET',
+            dataType: 'json',
+            data: data,
+            async: false
+        };
+
+        $.ajax(URL, settings)
+        .done(function() {
+            let sortorder = 1;
+            let slides = ul.querySelectorAll('.slide-item');
+            slides.forEach(function(slide) {
+                slide.dataset.sortorder = sortorder;
+                let handle = slide.querySelector('.handle');
+                handle.textContent = sortorder;
+                sortorder++;
+            });
+        });
+    };
 });
 {{/js}}
