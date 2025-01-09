@@ -29,6 +29,7 @@
  $string['modulename_help'] = 'The slideshow module enables a teacher to create a web slideshow resource using the text editor. Each slide can display text, images, sound, video, web links and embedded code, such as Google maps.';
  $string['slideshow:view'] = 'View slideshow content';
  $string['slideshow:addinstance'] = 'Add a new slideshow resource';
+ $string['slideshow:viewslides'] = 'View slides';
 
  $string['privacy:metadata'] = 'The Slideshow resource plugin does not store any personal data.';
  $string['content'] = 'Slide content';
