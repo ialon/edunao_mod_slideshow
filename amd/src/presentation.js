@@ -58,7 +58,7 @@ export const init = ({cmid}) => {
     });
 
     const prevSlide = () => {
-        window.console.log('Prev ' + current);
+        // window.console.log('Prev ' + current);
         if (current > 0) {
             slides[current].classList.add('hidden');
             slides[current - 1].classList.remove('hidden');
@@ -68,7 +68,7 @@ export const init = ({cmid}) => {
     };
 
     const nextSlide = () => {
-        window.console.log('next ' + current);
+        // window.console.log('next ' + current);
         if (current < total - 1) {
             slides[current].classList.add('hidden');
             slides[current + 1].classList.remove('hidden');

@@ -85,35 +85,39 @@ echo $OUTPUT->header();
 $slideshtml = '';
 $slides = $DB->get_records('slideshow_slide', array('slideshow' => $cm->id, 'hidden' => 0), 'sortorder');
 
-foreach ($slides as $slide) {
-    $content = file_rewrite_pluginfile_urls($slide->content, 'pluginfile.php', $context->id, 'mod_slideshow', 'content', $slideshow->revision);
-    $formatoptions = new stdClass;
-    $formatoptions->noclean = true;
-    $formatoptions->overflowdiv = true;
-    $formatoptions->context = $context;
-    $content = format_text($content, $slide->contentformat, $formatoptions);
-
-    $classes = 'slide';
-    if (!empty($slideshtml)) {
-        $classes .= ' hidden';
+if ($slides) {
+    foreach ($slides as $slide) {
+        $content = file_rewrite_pluginfile_urls($slide->content, 'pluginfile.php', $context->id, 'mod_slideshow', 'content', $slideshow->revision);
+        $formatoptions = new stdClass;
+        $formatoptions->noclean = true;
+        $formatoptions->overflowdiv = true;
+        $formatoptions->context = $context;
+        $content = format_text($content, $slide->contentformat, $formatoptions);
+    
+        $classes = 'slide';
+        if (!empty($slideshtml)) {
+            $classes .= ' hidden';
+        }
+    
+        $slideshtml .= html_writer::div($content, $classes);
     }
+    
+    $previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
+    $prevbutton = html_writer::link('#', $previcon, ['class' => 'prev disabled', 'title' => get_string('prev', 'slideshow')]);
+    $nexticon = $OUTPUT->pix_icon('t/collapsed', get_string('next', 'slideshow'));
+    $nextbutton = html_writer::link('#', $nexticon, ['class' => 'next' . (count($slides) == 1 ? ' disabled' : ''), 'title' => get_string('next', 'slideshow')]);
+    
+    $navbuttons = html_writer::span($prevbutton . $nextbutton, 'navbuttons');
+    $currentslide = html_writer::span('1/' . count($slides), 'currentslide');
+    
+    $fullicon = $OUTPUT->pix_icon('e/fullscreen', get_string('fullscreen', 'slideshow'));
+    $fullscreen = html_writer::link('#', $fullicon, ['class' => 'fullscreen']);
+    
+    $slideshtml .= html_writer::div($navbuttons . $currentslide . $fullscreen, 'slidecontrols');
 
-    $slideshtml .= html_writer::div($content, $classes);
+    echo $OUTPUT->box($slideshtml, "slidecontainer generalbox center clearfix", 'slideshow-' . $cm->id);
+} else {
+    echo html_writer::tag('p', get_string('noslides', 'slideshow'));
 }
-
-$previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
-$prevbutton = html_writer::link('#', $previcon, ['class' => 'prev disabled', 'title' => get_string('prev', 'slideshow')]);
-$nexticon = $OUTPUT->pix_icon('t/collapsed', get_string('next', 'slideshow'));
-$nextbutton = html_writer::link('#', $nexticon, ['class' => 'next' . (count($slides) == 1 ? ' disabled' : ''), 'title' => get_string('next', 'slideshow')]);
-
-$navbuttons = html_writer::span($prevbutton . $nextbutton, 'navbuttons');
-$currentslide = html_writer::span('1/' . count($slides), 'currentslide');
-
-$fullicon = $OUTPUT->pix_icon('e/fullscreen', get_string('fullscreen', 'slideshow'));
-$fullscreen = html_writer::link('#', $fullicon, ['class' => 'fullscreen']);
-
-$slideshtml .= html_writer::div($navbuttons . $currentslide . $fullscreen, 'slidecontrols');
-
-echo $OUTPUT->box($slideshtml, "slidecontainer generalbox center clearfix", 'slideshow-' . $cm->id);
 
 echo $OUTPUT->footer();

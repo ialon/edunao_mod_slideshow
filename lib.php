@@ -289,61 +289,37 @@ function slideshow_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     }
 
     require_course_login($course, true, $cm);
+
     if (!has_capability('mod/slideshow:view', $context)) {
         return false;
     }
 
-    if ($filearea !== 'content') {
-        // intro is handled automatically in pluginfile.php
+    if ($filearea === 'content') {
+        $revision = (int)array_shift($args); // Prevents caching problems - ignored here.
+        $relativepath = implode('/', $args);
+        $fullpath = "/$context->id/mod_slideshow/$filearea/0/$relativepath";
+        $options['immutable'] = true; // Add immutable option, $relativepath changes on file update.
+    } else {
         return false;
     }
 
-    // $arg could be revision number or index.html
-    $arg = array_shift($args);
-    if ($arg == 'index.html' || $arg == 'index.htm') {
-        // serve slideshow content
-        $filename = $arg;
+    // "/16/     mod_page/content/0/Screenshot 2025-01-08 at 20.16.53.png"
+    // "4cc2ff59ae6cb45668dc0d052f6b6aa60a57792c"
 
-        if (!$slideshow = $DB->get_record('slideshow', array('id'=>$cm->instance), '*', MUST_EXIST)) {
-            return false;
+    // "/20/mod_slideshow/content/0/Screenshot 2025-01-08 at 21.21.17.png"
+    // "eb342893842c2c622c02e46882a77f59890f7e0e"
+
+    $fs = get_file_storage();
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        if ($filearea === 'content') { // Return file not found straight away to improve performance.
+            send_header_404();
+            die;
         }
-
-        // We need to rewrite the pluginfile URLs so the media filters can work.
-        $content = file_rewrite_pluginfile_urls($slideshow->content, 'webservice/pluginfile.php', $context->id, 'mod_slideshow', 'content',
-                                                $slideshow->revision);
-        $formatoptions = new stdClass;
-        $formatoptions->noclean = true;
-        $formatoptions->overflowdiv = true;
-        $formatoptions->context = $context;
-        $content = format_text($content, $slideshow->contentformat, $formatoptions);
-
-        // Remove @@PLUGINFILE@@/.
-        $options = array('reverse' => true);
-        $content = file_rewrite_pluginfile_urls($content, 'webservice/pluginfile.php', $context->id, 'mod_slideshow', 'content',
-                                                $slideshow->revision, $options);
-        $content = str_replace('@@PLUGINFILE@@/', '', $content);
-
-        send_file($content, $filename, 0, 0, true, true);
-    } else {
-        $fs = get_file_storage();
-        $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/mod_slideshow/$filearea/0/$relativepath";
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            $slideshow = $DB->get_record('slideshow', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
-            if ($slideshow->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
-                return false;
-            }
-            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_slideshow', 'content', 0)) {
-                return false;
-            }
-            //file migrate - update flag
-            $slideshow->legacyfileslast = time();
-            $DB->update_record('slideshow', $slideshow);
-        }
-
-        // finally send the file
-        send_stored_file($file, null, 0, $forcedownload, $options);
+        return false;
     }
+
+    // Finally send the file.
+    send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
 /**

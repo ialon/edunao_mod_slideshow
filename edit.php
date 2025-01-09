@@ -45,7 +45,7 @@ $editoroptions = slideshow_get_editor_options($context);
 $slide = new stdClass();
 if ($slideid) {
     $record = $DB->get_record('slideshow_slide', array('id' => $slideid), '*', MUST_EXIST);
-    $slide = file_prepare_standard_editor($record, 'content', $editoroptions, $context, $module->name, 'slide', null);
+    $slide = file_prepare_standard_editor($record, 'content', $editoroptions, $context, 'mod_slideshow', 'content', 0);
 }
 
 $urlparams = array('cm' => $cm->id, 'id' => $slideid);
@@ -63,16 +63,19 @@ $mform->set_data($slide);
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 } else if ($fromform = $mform->get_data()) {
-    $fromform = file_postupdate_standard_editor($fromform, 'content', $editoroptions, $context, $module->name, 'slide', 0);
-
     $fromform->timemodified = time();
 
     if (!empty($fromform->id)) {
         $DB->update_record('slideshow_slide', $fromform);
     } else {
         $fromform->sortorder = $DB->count_records('slideshow_slide', array('slideshow' => $cm->id)) + 1;
-        $DB->insert_record('slideshow_slide', $fromform);
+        $fromform->id = $DB->insert_record('slideshow_slide', $fromform);
     }
+
+    // Save the files used in the summary editor and store
+    $fromform = file_postupdate_standard_editor($fromform, 'content', $editoroptions, $context, 'mod_slideshow', 'content', 0);
+    $DB->set_field('slideshow_slide', 'content', $fromform->content, array('id'=>$fromform->id));
+    $DB->set_field('slideshow_slide', 'contentformat', $fromform->contentformat, array('id'=>$fromform->id));
 
     \core\notification::add(
         get_string('slide_saved', $module->name),
