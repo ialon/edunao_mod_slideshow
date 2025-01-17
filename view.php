@@ -99,7 +99,7 @@ if ($slides) {
             $classes .= ' hidden';
         }
     
-        $slideshtml .= html_writer::div($content, $classes);
+        $slideshtml .= html_writer::div($content, $classes, ['data-slideid' => $slide->id]);
     }
     
     $previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
@@ -116,6 +116,12 @@ if ($slides) {
     $slideshtml .= html_writer::div($navbuttons . $currentslide . $fullscreen, 'slidecontrols');
 
     echo $OUTPUT->box($slideshtml, "slidecontainer generalbox center clearfix", 'slideshow-' . $cm->id);
+
+    // Edit slide button
+    if ($hascap = has_capability('mod/slideshow:viewslides', $context)) {
+        $editbutton = html_writer::link('#', get_string('edit', 'slideshow'), ['class' => 'editslide btn btn-secondary float-right']);
+        echo $editbutton;
+    }
 } else {
     echo html_writer::tag('p', get_string('noslides', 'slideshow'));
 }

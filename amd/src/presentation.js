@@ -13,6 +13,7 @@ define([], function() {
         next: '.next',
         currentSlide: '.currentslide',
         fullscreen: '.fullscreen',
+        editslide: '.editslide',
     };
 
     return {
@@ -32,6 +33,8 @@ define([], function() {
             let next = container.querySelector(Selectors.next);
             let currentslide = container.querySelector(Selectors.currentSlide);
             let fullscreen = container.querySelector(Selectors.fullscreen);
+
+            let editslide = document.querySelector(Selectors.editslide);
 
             document.addEventListener('keyup', (e) => {
                 if (document.fullscreenElement) {
@@ -87,6 +90,18 @@ define([], function() {
                     container.requestFullscreen();
                 }
             });
+
+            editslide.addEventListener('click', () => {
+                editSlide();
+            });
+
+            /**
+             * Navigates to the slide edit page for the current slide.
+             */
+            const editSlide = () => {
+                let slideid = slides[current].getAttribute('data-slideid');
+                window.location.href = '/mod/slideshow/edit.php?cm=' + options.cmid + '&id=' + slideid;
+            };
 
             /**
              * Updates the text content of the current slide element to display the current slide number and the total number of slides.
