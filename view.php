@@ -56,29 +56,21 @@ slideshow_view($slideshow, $course, $cm, $context);
 
 $PAGE->set_url('/mod/slideshow/view.php', array('id' => $cm->id));
 
-$options = empty($slideshow->displayoptions) ? [] : (array) unserialize_array($slideshow->displayoptions);
+$PAGE->add_body_class('limitedwidth');
+$PAGE->set_title($course->shortname.': '.$slideshow->name);
+$PAGE->set_heading($course->fullname);
+$PAGE->set_activity_record($slideshow);
 
-$activityheader = ['hidecompletion' => false];
-if (empty($options['printintro'])) {
-    $activityheader['description'] = '';
+$jsparams = ['cmid' => $cm->id];
+
+// Get sharecourse link.
+if (class_exists('local_sharecourse\sharecourse_helper')) {
+    $sharecoursehelper = new local_sharecourse\sharecourse_helper($DB);
+    $courseurl = $sharecoursehelper->get_sharecourse_url($course->id);
+    $jsparams['enrolurl'] = $courseurl->out();
 }
 
-if ($inpopup and $slideshow->display == RESOURCELIB_DISPLAY_POPUP) {
-    $PAGE->set_pagelayout('popup');
-    $PAGE->set_title($course->shortname.': '.$slideshow->name);
-    $PAGE->set_heading($course->fullname);
-} else {
-    $PAGE->add_body_class('limitedwidth');
-    $PAGE->set_title($course->shortname.': '.$slideshow->name);
-    $PAGE->set_heading($course->fullname);
-    $PAGE->set_activity_record($slideshow);
-    if (!$PAGE->activityheader->is_title_allowed()) {
-        $activityheader['title'] = "";
-    }
-}
-$PAGE->activityheader->set_attrs($activityheader);
-
-$PAGE->requires->js_call_amd('mod_slideshow/presentation', 'init', [['cmid' => $cm->id]]);
+$PAGE->requires->js_call_amd('mod_slideshow/presentation', 'init', [$jsparams]);
 
 echo $OUTPUT->header();
 
@@ -86,6 +78,12 @@ $slideshtml = '';
 $slides = $DB->get_records('slideshow_slide', array('slideshow' => $cm->id, 'hidden' => 0), 'sortorder');
 
 if ($slides) {
+    // Overlay for QR Code
+    $scantoenrol = html_writer::div(get_string('scantoenrol', 'slideshow'), 'scantoenrol');
+    $slideshtml .= html_writer::div($scantoenrol, 'overlay hidden');
+
+    // Prepare each slide
+    $firstslide = true;
     foreach ($slides as $slide) {
         $content = file_rewrite_pluginfile_urls($slide->content, 'pluginfile.php', $context->id, 'mod_slideshow', 'content', $slideshow->revision);
         $formatoptions = new stdClass;
@@ -95,25 +93,30 @@ if ($slides) {
         $content = format_text($content, $slide->contentformat, $formatoptions);
     
         $classes = 'slide no-overflow';
-        if (!empty($slideshtml)) {
+        if (!$firstslide) {
             $classes .= ' hidden';
         }
+        $firstslide = false;
     
         $slideshtml .= html_writer::div($content, $classes, ['data-slideid' => $slide->id]);
     }
 
+    // Edunano logo watermark
     $logourl = $OUTPUT->get_compact_logo_url();
     $watermark = html_writer::img($logourl, get_string('watermark', 'slideshow'), ['class' => 'watermark']);
     $slideshtml .= html_writer::div($watermark, 'watermark');
     
+    // Navigation buttons
     $previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
     $prevbutton = html_writer::link('#', $previcon, ['class' => 'prev disabled', 'title' => get_string('prev', 'slideshow')]);
     $nexticon = $OUTPUT->pix_icon('t/collapsed', get_string('next', 'slideshow'));
     $nextbutton = html_writer::link('#', $nexticon, ['class' => 'next' . (count($slides) == 1 ? ' disabled' : ''), 'title' => get_string('next', 'slideshow')]);
     
+    // Current slide indicator
     $navbuttons = html_writer::span($prevbutton . $nextbutton, 'navbuttons');
     $currentslide = html_writer::span('1/' . count($slides), 'currentslide');
-    
+
+    // Font size controls
     $fontsize = $OUTPUT->pix_icon('e/styleparagraph', get_string('decrease', 'slideshow'), 'core', ['class' => 'decrease']);
     $fontsize .= html_writer::tag(
         'input',
@@ -130,11 +133,23 @@ if ($slides) {
     );
     $fontsize .= $OUTPUT->pix_icon('e/styleparagraph', get_string('increase', 'slideshow'), 'core', ['class' => 'increase']);
 
-    $fullicon = $OUTPUT->pix_icon('e/fullscreen', get_string('fullscreen', 'slideshow'));
-    $fullscreen = html_writer::link('#', $fullicon, ['class' => 'fullscreen']);
+    // Enrolment QR
+    $qrcode = '';
+    if (class_exists('local_sharecourse\sharecourse_helper')) {
+        $qricon = html_writer::tag('i', '', [
+            'class' => 'icon fa fa-solid fa-qrcode fa-fw',
+            'title' => get_string('qrcode', 'slideshow'),
+            'role' => 'img',
+            'aria-label' => get_string('qrcode', 'slideshow')
+        ]);
+        $qrcode = html_writer::span($qricon, 'qrcode');
+    }
 
-    $controls = html_writer::div($fontsize . $fullscreen, 'controls');
-    
+    // Fullscreen button
+    $fullicon = $OUTPUT->pix_icon('e/fullscreen', get_string('fullscreen', 'slideshow'));
+    $fullscreen = html_writer::span($fullicon, 'fullscreen');
+
+    $controls = html_writer::div($fontsize . $qrcode . $fullscreen, 'controls');
     $slideshtml .= html_writer::div($navbuttons . $currentslide . $controls, 'slidecontrols');
 
     echo $OUTPUT->box($slideshtml, "slideshow-container generalbox center clearfix", 'slideshow-' . $cm->id);

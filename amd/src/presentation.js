@@ -6,14 +6,18 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define([], function() {
+define([
+    'qrcode',
+], function(QRCode) {
     const Selectors = {
         slides: '.slide',
         prev: '.prev',
         next: '.next',
         currentSlide: '.currentslide',
-        fullscreen: '.fullscreen',
         fontsize: '.fontsize',
+        overlay: '.overlay',
+        qrcode: '.qrcode',
+        fullscreen: '.fullscreen',
         editslide: '.editslide',
     };
 
@@ -34,12 +38,39 @@ define([], function() {
             let prev = container.querySelector(Selectors.prev);
             let next = container.querySelector(Selectors.next);
             let currentslide = container.querySelector(Selectors.currentSlide);
-            let fullscreen = container.querySelector(Selectors.fullscreen);
+            let overlay = container.querySelector(Selectors.overlay);
             let fontsize = container.querySelector(Selectors.fontsize);
+            let fullscreen = container.querySelector(Selectors.fullscreen);
 
             // Edit slide button
             let editslide = document.querySelector(Selectors.editslide);
 
+            // Set width and height for the QR Code container
+            overlay.setAttribute('style', 'width: ' + container.offsetWidth + 'px; height: ' + container.offsetWidth * (9/16) + 'px;');
+
+            // Hide overlay on click
+            overlay.addEventListener('click', () => {
+                overlay.classList.toggle('hidden');
+            });
+
+            // Enrol URL is set, add QR logic
+            if (options.enrolurl) {
+                let qrcode = container.querySelector(Selectors.qrcode);
+
+                // Toggle overlay button
+                qrcode.addEventListener('click', () => {
+                    overlay.classList.toggle('hidden');
+                });
+
+                // Generate QR code
+                new QRCode(overlay, {
+                    text: options.enrolurl,
+                    width: container.offsetHeight * 0.5,
+                    height: container.offsetHeight * 0.5,
+                });
+            }
+
+            // Navigate slides with arrow keys
             document.addEventListener('keyup', (e) => {
                 if (document.fullscreenElement) {
                     if (e.key === 'ArrowLeft') {
@@ -51,6 +82,7 @@ define([], function() {
                 }
             });
 
+            // Listen for fullscreen change event
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     container.classList.add('fullscreen');
@@ -60,18 +92,16 @@ define([], function() {
                     fontsize.value = '150';
                 }
                 fontsize.dispatchEvent(new Event('input', { 'bubbles': true }));
+                updateSlideDimensions();
             });
 
+            // Previous slide button
             prev.addEventListener('click', () => {
                 prevSlide();
             });
 
-            next.addEventListener('click', () => {
-                nextSlide();
-            });
-
+            // Navigate to the previous slide
             const prevSlide = () => {
-                // window.console.log('Prev ' + current);
                 if (current > 0) {
                     slides[current].classList.add('hidden');
                     slides[current - 1].classList.remove('hidden');
@@ -80,8 +110,13 @@ define([], function() {
                 }
             };
 
+            // Next slide button
+            next.addEventListener('click', () => {
+                nextSlide();
+            });
+
+            // Navigate to the next slide
             const nextSlide = () => {
-                // window.console.log('next ' + current);
                 if (current < total - 1) {
                     slides[current].classList.add('hidden');
                     slides[current + 1].classList.remove('hidden');
@@ -90,6 +125,7 @@ define([], function() {
                 }
             };
 
+            // Fullscreen button
             fullscreen.addEventListener('click', () => {
                 if (document.fullscreenElement) {
                     document.exitFullscreen();
@@ -98,28 +134,23 @@ define([], function() {
                 }
             });
 
+            // Font size slider
             fontsize.addEventListener('input', function() {
                 container.style.fontSize = this.value +"%";
             });
 
+            // Edit slide button
             editslide.addEventListener('click', () => {
                 editSlide();
             });
-
-            /**
-             * Navigates to the slide edit page for the current slide.
-             */
+            
+            // Navigate to edit page for the current slide
             const editSlide = () => {
                 let slideid = slides[current].getAttribute('data-slideid');
                 window.location.href = '/mod/slideshow/edit.php?cm=' + options.cmid + '&id=' + slideid;
             };
 
-            /**
-             * Updates the text content of the current slide element to display the current slide number and the total number of slides.
-             * @function
-             * @name updateCurrentSlide
-             * @global
-             */
+            // Set the current slide indicator
             const updateCurrentSlide = () => {
                 currentslide.innerText = (current + 1) + '/' + total;
                 if (current === 0) {
@@ -134,23 +165,27 @@ define([], function() {
                 }
             };
 
+            // Resize slide to keep a 16:9 aspect ratio
             window.addEventListener('resize', () => {
-                updateSlideHeight();
+                updateSlideDimensions();
             }, true);
 
             /**
              * Updates the height of the slide container based on the current slide's width.
              * The height is set to maintain a 16:9 aspect ratio.
              */
-            const updateSlideHeight = () => {
-                console.log("updateSlideHeight");
+            const updateSlideDimensions = () => {
+                // QR Code overlay
+                overlay.setAttribute('style', 'width: ' + container.offsetWidth + 'px; height: ' + container.offsetWidth * (9/16) + 'px;');
+
+                // Slides
                 slides.forEach(slide => {
-                    slide.setAttribute('style', 'height: ' + slide.offsetWidth * (9/16) + 'px;');
+                    slide.setAttribute('style', 'height: ' + container.offsetWidth * (9/16) + 'px;');
                 });
             };
 
-            // Set inital slide height
-            updateSlideHeight();
+            // Set inital slide dimensions
+            updateSlideDimensions();
         }
     };
 });
