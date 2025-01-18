@@ -13,6 +13,7 @@ define([], function() {
         next: '.next',
         currentSlide: '.currentslide',
         fullscreen: '.fullscreen',
+        fontsize: '.fontsize',
         editslide: '.editslide',
     };
 
@@ -29,11 +30,14 @@ define([], function() {
             let total = slides.length;
             let current = 0;
 
+            // Navigation buttons
             let prev = container.querySelector(Selectors.prev);
             let next = container.querySelector(Selectors.next);
             let currentslide = container.querySelector(Selectors.currentSlide);
             let fullscreen = container.querySelector(Selectors.fullscreen);
+            let fontsize = container.querySelector(Selectors.fontsize);
 
+            // Edit slide button
             let editslide = document.querySelector(Selectors.editslide);
 
             document.addEventListener('keyup', (e) => {
@@ -50,9 +54,12 @@ define([], function() {
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     container.classList.add('fullscreen');
+                    fontsize.value = '300';
                 } else {
                     container.classList.remove('fullscreen');
+                    fontsize.value = '150';
                 }
+                fontsize.dispatchEvent(new Event('input', { 'bubbles': true }));
             });
 
             prev.addEventListener('click', () => {
@@ -91,6 +98,10 @@ define([], function() {
                 }
             });
 
+            fontsize.addEventListener('input', function() {
+                container.style.fontSize = this.value +"%";
+            });
+
             editslide.addEventListener('click', () => {
                 editSlide();
             });
@@ -122,6 +133,24 @@ define([], function() {
                     next.classList.remove('disabled');
                 }
             };
+
+            window.addEventListener('resize', () => {
+                updateSlideHeight();
+            }, true);
+
+            /**
+             * Updates the height of the slide container based on the current slide's width.
+             * The height is set to maintain a 16:9 aspect ratio.
+             */
+            const updateSlideHeight = () => {
+                console.log("updateSlideHeight");
+                slides.forEach(slide => {
+                    slide.setAttribute('style', 'height: ' + slide.offsetWidth * (9/16) + 'px;');
+                });
+            };
+
+            // Set inital slide height
+            updateSlideHeight();
         }
     };
 });

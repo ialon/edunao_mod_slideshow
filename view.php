@@ -94,7 +94,7 @@ if ($slides) {
         $formatoptions->context = $context;
         $content = format_text($content, $slide->contentformat, $formatoptions);
     
-        $classes = 'slide';
+        $classes = 'slide no-overflow';
         if (!empty($slideshtml)) {
             $classes .= ' hidden';
         }
@@ -110,12 +110,30 @@ if ($slides) {
     $navbuttons = html_writer::span($prevbutton . $nextbutton, 'navbuttons');
     $currentslide = html_writer::span('1/' . count($slides), 'currentslide');
     
+    $fontsize = $OUTPUT->pix_icon('e/styleparagraph', get_string('decrease', 'slideshow'), 'core', ['class' => 'decrease']);
+    $fontsize .= html_writer::tag(
+        'input',
+        '',
+        [
+            'id' => 'fontsize-slider',
+            'class' => 'fontsize',
+            'type' => 'range',
+            'min' => '10',
+            'max' => '500',
+            'step' => '5',
+            'value' => '150'
+        ]
+    );
+    $fontsize .= $OUTPUT->pix_icon('e/styleparagraph', get_string('increase', 'slideshow'), 'core', ['class' => 'increase']);
+
     $fullicon = $OUTPUT->pix_icon('e/fullscreen', get_string('fullscreen', 'slideshow'));
     $fullscreen = html_writer::link('#', $fullicon, ['class' => 'fullscreen']);
-    
-    $slideshtml .= html_writer::div($navbuttons . $currentslide . $fullscreen, 'slidecontrols');
 
-    echo $OUTPUT->box($slideshtml, "slidecontainer generalbox center clearfix", 'slideshow-' . $cm->id);
+    $controls = html_writer::div($fontsize . $fullscreen, 'controls');
+    
+    $slideshtml .= html_writer::div($navbuttons . $currentslide . $controls, 'slidecontrols');
+
+    echo $OUTPUT->box($slideshtml, "slideshow-container generalbox center clearfix", 'slideshow-' . $cm->id);
 
     // Edit slide button
     if ($hascap = has_capability('mod/slideshow:viewslides', $context)) {
