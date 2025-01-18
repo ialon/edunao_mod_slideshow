@@ -101,6 +101,10 @@ if ($slides) {
     
         $slideshtml .= html_writer::div($content, $classes, ['data-slideid' => $slide->id]);
     }
+
+    $logourl = $OUTPUT->get_compact_logo_url();
+    $watermark = html_writer::img($logourl, get_string('watermark', 'slideshow'), ['class' => 'watermark']);
+    $slideshtml .= html_writer::div($watermark, 'watermark');
     
     $previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
     $prevbutton = html_writer::link('#', $previcon, ['class' => 'prev disabled', 'title' => get_string('prev', 'slideshow')]);

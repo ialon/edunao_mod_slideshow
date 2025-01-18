@@ -66,6 +66,7 @@ $string['printlastmodified'] = 'Display last modified date';
 $string['printlastmodifiedexplain'] = 'Display last modified date below content?';
 $string['search:activity'] = 'Slideshow';
 
+$string['watermark'] = 'Powered by Edunao';
 $string['addnew'] = 'Add new slide';
 $string['prev'] = 'Previous slide';
 $string['next'] = 'Next slide';
