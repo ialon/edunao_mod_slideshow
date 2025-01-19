@@ -24,7 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023100901;       // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2023100400;    // Requires this Moodle version.
-$plugin->component = 'mod_slideshow';       // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2023100902;        // The current module version (Date: YYYYMMDDXX).
+$plugin->requires  = 2023100400;        // Requires this Moodle version.
+$plugin->component = 'mod_slideshow';   // Full name of the plugin (used for diagnostics)
 $plugin->cron      = 0;
+$plugin->dependencies = [
+    'local_sharecourse' => 2024060401
+];
