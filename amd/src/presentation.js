@@ -16,6 +16,7 @@ define([
         currentSlide: '.currentslide',
         fontsize: '.fontsize',
         overlay: '.overlay',
+        scantoenrol: '.scantoenrol',
         qrcode: '.qrcode',
         fullscreen: '.fullscreen',
         editslide: '.editslide',
@@ -39,6 +40,7 @@ define([
             let next = container.querySelector(Selectors.next);
             let currentslide = container.querySelector(Selectors.currentSlide);
             let overlay = container.querySelector(Selectors.overlay);
+            let scantoenrol = overlay.querySelector(Selectors.scantoenrol);
             let fontsize = container.querySelector(Selectors.fontsize);
             let fullscreen = container.querySelector(Selectors.fullscreen);
 
@@ -63,10 +65,10 @@ define([
                 });
 
                 // Generate QR code
-                new QRCode(overlay, {
+                new QRCode(scantoenrol, {
                     text: options.enrolurl,
-                    width: container.offsetHeight * 0.5,
-                    height: container.offsetHeight * 0.5,
+                    width: container.offsetHeight * 0.4,
+                    height: container.offsetHeight * 0.4,
                 });
             }
 

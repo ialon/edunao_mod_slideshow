@@ -108,10 +108,10 @@ if ($slides) {
     
     // Navigation buttons
     $previcon = $OUTPUT->pix_icon('t/collapsed_rtl', get_string('prev', 'slideshow'));
-    $prevbutton = html_writer::link('#', $previcon, ['class' => 'prev disabled', 'title' => get_string('prev', 'slideshow')]);
+    $prevbutton = html_writer::span($previcon, 'prev disabled');
     $nexticon = $OUTPUT->pix_icon('t/collapsed', get_string('next', 'slideshow'));
-    $nextbutton = html_writer::link('#', $nexticon, ['class' => 'next' . (count($slides) == 1 ? ' disabled' : ''), 'title' => get_string('next', 'slideshow')]);
-    
+    $nextbutton = html_writer::span($nexticon, 'next' . (count($slides) == 1 ? ' disabled' : ''));
+
     // Current slide indicator
     $navbuttons = html_writer::span($prevbutton . $nextbutton, 'navbuttons');
     $currentslide = html_writer::span('1/' . count($slides), 'currentslide');
