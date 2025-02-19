@@ -550,3 +550,46 @@ function slideshow_extend_settings_navigation(settings_navigation $settings, nav
         $slidesnode->add(get_string("slides", "slideshow"), $url, navigation_node::TYPE_CUSTOM, null, 'slideshowslides');
     }
 }
+
+function slideshow_add_button_to_context_header($page) {
+    global $SERVER, $OUTPUT;
+
+    $target = '/mod/slideshow/slides.php';
+    $editicon = '';
+
+    if ($page->cm->modname !== 'slideshow') {
+        return $editicon;
+    }
+
+    // Check if page is /mod/slideshow/slides.php
+    $url = $_SERVER['PHP_SELF'];
+    if (str_contains($url, $target)) {
+        return $editicon;
+    }
+
+    if (has_capability('mod/slideshow:viewslides', $page->cm->context)) {
+        $editstring = get_string('edit', 'slideshow');
+        $editurl = new moodle_url($target, array('id' => $page->cm->id));
+        $editimage = $OUTPUT->image_url('monologo', 'slideshow');
+        $editicon = html_writer::img(
+            $editimage,
+            $editstring,
+            [
+                'class' => 'icon',
+                'alt' => $editstring,
+                'style' => 'height: 26px; width: auto; margin: 0;'
+            ]
+        );
+        $editicon = html_writer::link(
+            $editurl,
+            $editicon,
+            [
+                'style' => 'padding: 11px 12px;',
+                'class' => 'btn btn-secondary edit-button',
+                'title' => $editstring
+            ]
+        );
+    }
+
+    return $editicon;
+}
