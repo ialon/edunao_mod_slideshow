@@ -568,7 +568,7 @@ function slideshow_add_button_to_context_header($page) {
     }
 
     if (has_capability('mod/slideshow:viewslides', $page->cm->context)) {
-        $editstring = get_string('edit', 'slideshow');
+        $editstring = get_string('slides', 'slideshow');
         $editurl = new moodle_url($target, array('id' => $page->cm->id));
         $editimage = $OUTPUT->image_url('monologo', 'slideshow');
         $editicon = html_writer::img(
@@ -584,7 +584,7 @@ function slideshow_add_button_to_context_header($page) {
             $editurl,
             $editicon,
             [
-                'style' => 'padding: 11px 12px;',
+                'style' => 'padding: 8px 9px;',
                 'class' => 'btn btn-secondary edit-button',
                 'title' => $editstring
             ]

@@ -54,8 +54,9 @@ $PAGE->set_url($url);
 
 $pagepath = "mod-$module->name-mod";
 $PAGE->set_pagetype($pagepath);
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('incourse');
 $PAGE->add_body_class('limitedwidth');
+$PAGE->set_context($context);
 
 $mform = new mod_slideshow_slide_edit_form($url, array('context' => $context, 'cm' => $cm));
 $mform->set_data($slide);

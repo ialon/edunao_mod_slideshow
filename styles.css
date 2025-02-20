@@ -209,6 +209,7 @@
 /*  Slide list  */
 #slide-list {
     list-style: none;
+    padding: 0px;
 }
 
 #slide-list .group:after {
