@@ -80,6 +80,6 @@ foreach ($slides as $slide) {
 echo $OUTPUT->render_from_template('mod_slideshow/slideshow', $data);
 
 $newslideurl = new moodle_url('/mod/slideshow/edit.php', array('cm' => $cm->id));
-echo $OUTPUT->single_button($newslideurl, get_string('addnew', 'slideshow'), 'get', array('class' => 'float-right'));
+echo $OUTPUT->single_button($newslideurl, get_string('addnew', 'slideshow'), 'get', array('class' => 'w-100 mb-3 text-right'));
 
 echo $OUTPUT->footer();
